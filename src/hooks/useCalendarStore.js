@@ -3,36 +3,76 @@ import {
 	onAddNewEvent,
 	onDeleteEvent,
 	onSetActiveEvent,
+	onLoadEvents,
 	onUpdateEvent,
 } from "../store";
+
+import { useAuthStore } from "./useAuthStore";
+
+import calendarAPI from "../api/calendarApi";
+
+import { convertEventsToDateEvents } from "../helpers";
+import Swal from "sweetalert2";
 
 export const useCalendarStore = () => {
 	const dispatch = useDispatch();
 	const { events, activeEvent } = useSelector(state => state.calendar);
+	const { user } = useAuthStore();
 
 	const setActiveEvent = calendarEvent => {
 		dispatch(onSetActiveEvent(calendarEvent));
 	};
 
 	const startSavingEvent = async calendarEvent => {
-		if (calendarEvent._id) {
-			dispatch(onUpdateEvent({ ...calendarEvent }));
-		} else {
+		try {
+			if (calendarEvent.id) {
+				await calendarAPI.put(`/events/update/${calendarEvent.id}`, {
+					...calendarEvent,
+				});
+				dispatch(onUpdateEvent({ ...calendarEvent, user }));
+				return;
+			}
+			const response = await calendarAPI.post("/events/new", {
+				...calendarEvent,
+			});
 			dispatch(
 				onAddNewEvent({
-					...calendarEvent,
-					_id: new Date().getTime(),
-					user: {
-						_id: "12345",
-						name: "Gabriel",
-					},
+					...response.data.event,
+					user,
 				})
+			);
+		} catch (error) {
+			console.log(error);
+			Swal.fire("Error al guardar el evento", error.response.data.msg, "error");
+		}
+	};
+
+	const startLoadingEvents = async () => {
+		try {
+			const response = await calendarAPI.get("/events");
+			if (!response.data) return;
+
+			dispatch(onLoadEvents(convertEventsToDateEvents(response.data.events)));
+		} catch (error) {
+			Swal.fire(
+				"Error al cargar los eventos",
+				error.response.data.msg,
+				"error"
 			);
 		}
 	};
 
-	const startDeletingEvent = () => {
-		dispatch(onDeleteEvent());
+	const startDeletingEvent = async () => {
+		try {
+			await calendarAPI.delete(`/events/delete/${activeEvent.id}`);
+			dispatch(onDeleteEvent());
+		} catch (error) {
+			Swal.fire(
+				"Error al eliminar el evento",
+				error.response.data.msg,
+				"error"
+			);
+		}
 	};
 
 	return {
@@ -45,5 +85,6 @@ export const useCalendarStore = () => {
 		setActiveEvent,
 		startSavingEvent,
 		startDeletingEvent,
+		startLoadingEvents,
 	};
 };

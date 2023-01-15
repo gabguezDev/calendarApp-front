@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Calendar } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
@@ -7,7 +7,7 @@ import { useDispatch } from "react-redux";
 
 import { onSetActiveEvent } from "../../store";
 
-import { useCalendarStore, useUiStore } from "../../hooks";
+import { useAuthStore, useCalendarStore, useUiStore } from "../../hooks";
 
 import {
 	CalendarEvent,
@@ -22,14 +22,30 @@ import { getMessages, localizer } from "../../helpers";
 export const CalendarPage = () => {
 	const dispatch = useDispatch();
 
-	const { events } = useCalendarStore();
+	const { events, startLoadingEvents } = useCalendarStore();
+	const { user } = useAuthStore();
 	const { openDateModal } = useUiStore();
 
 	const [lastView, setLastView] = useState(
 		localStorage.getItem("lastView") || "agenda"
 	);
 
-	const eventStyleGetter = (event, start, end, isSelected) => {};
+	useEffect(() => {
+		startLoadingEvents();
+	}, []);
+
+	const eventStyleGetter = event => {
+		const isMyEvent = user.uid === event.user._id;
+
+		const style = {
+			backgroundColor: isMyEvent ? "#347CF7" : "#465660",
+			borderRadius: "14px",
+			opacity: 0.8,
+			color: "white",
+		};
+
+		return { style };
+	};
 
 	const onDoubleClick = () => {
 		openDateModal();

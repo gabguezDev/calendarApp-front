@@ -74,7 +74,8 @@ export const AuthPage = () => {
 								className="form-control"
 								placeholder="Correo"
 								name="loginEmail"
-								value={loginEmail}
+								id="loginEmail"
+								value={loginEmail || ""}
 								onChange={onLoginInputChange}
 							/>
 						</div>
@@ -84,12 +85,15 @@ export const AuthPage = () => {
 								className="form-control"
 								placeholder="Contraseña"
 								name="loginPassword"
-								value={loginPassword}
+								id="loginPassword"
+								value={loginPassword || ""}
 								onChange={onLoginInputChange}
 							/>
 						</div>
 						<div className="form-group mb-2">
-							<input type="submit" className="btnSubmit" value="Login" />
+							<button type="submit" className="btnSubmit">
+								Login
+							</button>
 						</div>
 					</form>
 				</div>
@@ -103,7 +107,8 @@ export const AuthPage = () => {
 								className="form-control"
 								placeholder="Nombre"
 								name="registerName"
-								value={registerName}
+								id="registerName"
+								value={registerName || ""}
 								onChange={onRegisterInputChange}
 							/>
 						</div>
@@ -113,7 +118,8 @@ export const AuthPage = () => {
 								className="form-control"
 								placeholder="Correo"
 								name="registerEmail"
-								value={registerEmail}
+								id="registerEmail"
+								value={registerEmail || ""}
 								onChange={onRegisterInputChange}
 							/>
 						</div>
@@ -123,7 +129,8 @@ export const AuthPage = () => {
 								className="form-control"
 								placeholder="Contraseña"
 								name="registerPassword"
-								value={registerPassword}
+								id="registerPassword"
+								value={registerPassword || ""}
 								onChange={onRegisterInputChange}
 							/>
 						</div>
@@ -134,13 +141,16 @@ export const AuthPage = () => {
 								className="form-control"
 								placeholder="Repita la contraseña"
 								name="registerPassword2"
-								value={registerPassword2}
+								id="registerPassword2"
+								value={registerPassword2 || ""}
 								onChange={onRegisterInputChange}
 							/>
 						</div>
 
 						<div className="form-group mb-2">
-							<input type="submit" className="btnSubmit" value="Crear cuenta" />
+							<button type="submit" className="btnSubmit">
+								Crear cuenta
+							</button>
 						</div>
 					</form>
 				</div>
